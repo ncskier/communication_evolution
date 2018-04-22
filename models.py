@@ -1,5 +1,4 @@
 from enum import Enum
-from sets import Set
 
 
 class Direction(Enum):
@@ -31,9 +30,9 @@ class World:
         # Move agents
         # Move precedence (1) not moving (2) North (3) South (4) East (5) West
         next_agents = {}
-        moved_set = Set()
+        moved_set = set()
         for loc in self.agents:
-            rec_set = Set()
+            rec_set = set()
             if loc not in moved_set:
                 moved_set, next_agents = self.move_agent(loc, rec_set, moved_set, next_agents)
         self.agents = next_agents
