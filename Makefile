@@ -1,2 +1,2 @@
 tests:
-	python modeltests.py
+	python3 modeltests.py
