@@ -9,15 +9,26 @@ class View:
         pygame.init()
         # Set screen size of pygame window
         self.screen = pygame.display.set_mode((640, 480))
+        # Create grid
+        self.cell_size = self.calculate_cell_size(world)
         # Create background
+        self.init_background(world)
+        # Update pygame display
+        pygame.display.flip()
+
+    def init_background(self, world):
         self.background = pygame.Surface(self.screen.get_size())
         self.background.fill((255, 255, 255))
         self.background = self.background.convert()   # convert surface to make blitting faster
-        self.screen.blit(self.background, (0, 0))
-        # Create grid
-        self.cell_size = self.calculate_cell_size(world)
-        # Update pygame display
-        pygame.display.flip()
+        grid_color = (0, 0, 0)
+        for x in range(world.width-1):
+            start_pos = self.grid_to_screen((x+1, -1), world)
+            end_pos = self.grid_to_screen((x+1, world.height-1), world)
+            pygame.draw.line(self.background, grid_color, start_pos, end_pos)
+        for y in range(world.height-1):
+            start_pos = self.grid_to_screen((0, y), world)
+            end_pos = self.grid_to_screen((world.width, y), world)
+            pygame.draw.line(self.background, grid_color, start_pos, end_pos)
 
     def draw(self, world):
         """Draw [world]."""
