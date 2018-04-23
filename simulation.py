@@ -9,11 +9,11 @@ def main():
     world.agents[(0,0)].direction = Direction.EAST
     world.agents[(3,3)] = Agent()
     world.agents[(3,3)].move = True
-    print '0', world
+    print('0', world)
     # Run simulation
     for t in range(1,10):
         world.update()
-        print t, world
+        print(t, world)
 
 
 if __name__ == '__main__':
