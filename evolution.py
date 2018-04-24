@@ -8,8 +8,8 @@ class Simulation:
 
     def __init__(self):
         # Initialize world
-        self.world = World(5, 5)
-        self.num_agents = 4
+        self.world = World(25, 25)
+        self.num_agents = 50
         self.initialize_agents()
         # Initialize view
         self.view = View(self.world)
@@ -17,9 +17,10 @@ class Simulation:
     def initialize_agents(self):
         """Add agents to [self.world]."""
         # Precondition: [self.world] and [self.num_agents] must be defined
-        for _ in range(self.num_agents):
-            agent = Agent()
-            agent.move = True
+        for i in range(self.num_agents):
+            agent = Agent(i)
+            agent.move = bool(random.getrandbits(1))
+            agent.direction = Direction(random.randrange(4))
             x = random.randrange(self.world.width)
             y = random.randrange(self.world.height)
             while (x, y) in self.world.agents:
@@ -30,7 +31,6 @@ class Simulation:
     def update(self):
         self.world.update()
         self.view.draw(self.world)
-        print(self.world)
 
     def __str__(self):
         return str(self.world)
@@ -38,7 +38,6 @@ class Simulation:
 
 def main():
     simulation = Simulation()
-    print(simulation)
     simulation.view.draw(simulation.world)
     simulation.view.save('out/world0.png')
     simulation.update()

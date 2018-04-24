@@ -121,10 +121,10 @@ class World:
 class Agent:
     """The agents residing in the evolutionary world."""
 
-    def __init__(self):
+    def __init__(self, private_id):
         """Initialize state inherent to world/communication"""
         # public id (contact id)
-        # private id
+        self.private_id = private_id
         self.direction = Direction.NORTH
         self.move = False
         self.moved = False
@@ -132,4 +132,4 @@ class Agent:
         pass
 
     def __str__(self):
-        return str(self.direction) + ', move: ' + str(self.move)
+        return str(self.private_id) + ', ' + str(self.direction) + ', move: ' + str(self.move)

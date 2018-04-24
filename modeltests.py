@@ -4,7 +4,7 @@ from models import World, Agent, Direction
 
 class AgentTestCase(unittest.TestCase):
     def test_agent_initialization(self):
-        agent = Agent()
+        agent = Agent(0)
         self.assertEqual(agent.direction, Direction.NORTH,
                             'incorrect initial agent direction')
         self.assertEqual(agent.move, False,
@@ -30,7 +30,7 @@ class MovementTestCase(unittest.TestCase):
 
     def test_agent_move_north(self):
         world = World(10, 5)
-        agent = Agent()
+        agent = Agent(0)
         agent.direction = Direction.NORTH
         agent.move = True
         world.agents[(0,0)] = agent
@@ -58,7 +58,7 @@ class MovementTestCase(unittest.TestCase):
 
     def test_agent_move_south(self):
         world = World(10, 5)
-        agent = Agent()
+        agent = Agent(0)
         agent.direction = Direction.SOUTH
         agent.move = True
         world.agents[(0,4)] = agent
@@ -86,7 +86,7 @@ class MovementTestCase(unittest.TestCase):
 
     def test_agent_move_east(self):
         world = World(5, 10)
-        agent = Agent()
+        agent = Agent(0)
         agent.direction = Direction.EAST
         agent.move = True
         world.agents[(0,0)] = agent
@@ -114,7 +114,7 @@ class MovementTestCase(unittest.TestCase):
 
     def test_agent_move_west(self):
         world = World(5, 10)
-        agent = Agent()
+        agent = Agent(0)
         agent.direction = Direction.WEST
         agent.move = True
         world.agents[(4,0)] = agent
@@ -143,21 +143,21 @@ class MovementTestCase(unittest.TestCase):
     def test_agent_collisions(self):
         world = World(10, 5)
         # not moving agent
-        agent = Agent()
+        agent = Agent(0)
         # agent moving north
-        agentN = Agent()
+        agentN = Agent(1)
         agentN.direction = Direction.NORTH
         agentN.move = True
         # agent moving south
-        agentS = Agent()
+        agentS = Agent(2)
         agentS.direction = Direction.SOUTH
         agentS.move = True
         # agent moving east
-        agentE = Agent()
+        agentE = Agent(3)
         agentE.direction = Direction.EAST
         agentE.move = True
         # agent moving west
-        agentW = Agent()
+        agentW = Agent(4)
         agentW.direction = Direction.WEST
         agentW.move = True
         # setup
@@ -206,19 +206,19 @@ class MovementTestCase(unittest.TestCase):
     def test_agent_collisions2(self):
         world = World(5, 5)
         # agent moving north
-        agentN = Agent()
+        agentN = Agent(0)
         agentN.direction = Direction.NORTH
         agentN.move = True
         # agent moving south
-        agentS = Agent()
+        agentS = Agent(1)
         agentS.direction = Direction.SOUTH
         agentS.move = True
         # agent moving east
-        agentE = Agent()
+        agentE = Agent(2)
         agentE.direction = Direction.EAST
         agentE.move = True
         # agent moving west
-        agentW = Agent()
+        agentW = Agent(3)
         agentW.direction = Direction.WEST
         agentW.move = True
         # setup
@@ -260,19 +260,19 @@ class MovementTestCase(unittest.TestCase):
     def test_agent_gridlock(self):
         world = World(2, 2)
         # agent moving north
-        agentN = Agent()
+        agentN = Agent(0)
         agentN.direction = Direction.NORTH
         agentN.move = True
         # agent moving south
-        agentS = Agent()
+        agentS = Agent(1)
         agentS.direction = Direction.SOUTH
         agentS.move = True
         # agent moving east
-        agentE = Agent()
+        agentE = Agent(2)
         agentE.direction = Direction.EAST
         agentE.move = True
         # agent moving west
-        agentW = Agent()
+        agentW = Agent(3)
         agentW.direction = Direction.WEST
         agentW.move = True
         # setup
@@ -305,31 +305,31 @@ class MovementTestCase(unittest.TestCase):
     def test_agent_gridlock2(self):
         world = World(3, 3)
         # agent moving north
-        agentN = Agent()
+        agentN = Agent(0)
         agentN.direction = Direction.NORTH
         agentN.move = True
         # agent moving north2
-        agentN2 = Agent()
+        agentN2 = Agent(1)
         agentN2.direction = Direction.NORTH
         agentN2.move = True
         # agent moving north3
-        agentN3 = Agent()
+        agentN3 = Agent(2)
         agentN3.direction = Direction.NORTH
         agentN3.move = True
         # agent moving south
-        agentS = Agent()
+        agentS = Agent(3)
         agentS.direction = Direction.SOUTH
         agentS.move = True
         # agent moving east
-        agentE = Agent()
+        agentE = Agent(4)
         agentE.direction = Direction.EAST
         agentE.move = True
         # agent moving west
-        agentW = Agent()
+        agentW = Agent(5)
         agentW.direction = Direction.WEST
         agentW.move = True
         # agent moving west2
-        agentW2 = Agent()
+        agentW2 = Agent(6)
         agentW2.direction = Direction.WEST
         agentW2.move = True
         # setup
@@ -377,19 +377,19 @@ class MovementTestCase(unittest.TestCase):
     def test_agent_gridlock_wrap(self):
         world = World(3, 3)
         # agent moving north
-        agentN = Agent()
+        agentN = Agent(0)
         agentN.direction = Direction.NORTH
         agentN.move = True
         # agent moving south
-        agentS = Agent()
+        agentS = Agent(1)
         agentS.direction = Direction.SOUTH
         agentS.move = True
         # agent moving east
-        agentE = Agent()
+        agentE = Agent(2)
         agentE.direction = Direction.EAST
         agentE.move = True
         # agent moving west
-        agentW = Agent()
+        agentW = Agent(3)
         agentW.direction = Direction.WEST
         agentW.move = True
         # setup
