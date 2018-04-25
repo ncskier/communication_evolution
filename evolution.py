@@ -28,6 +28,10 @@ class Simulation:
                 y = random.randrange(self.world.height)
             self.world.agents[(x, y)] = agent
 
+    def initialize_agent(self):
+        """Return initialized agent for the world."""
+        pass
+
     def update(self):
         self.world.update()
         self.view.draw(self.world)

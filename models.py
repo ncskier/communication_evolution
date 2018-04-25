@@ -18,12 +18,21 @@ class World:
         self.height = height
         self.agents = {}
 
-    def update(self):
+    def update(self, move=True):
         """Update world one step."""
         # (1) Communication between agents
         # (2) Move agents based on their state
-        self.update_move()
-        # (3) Update agent sensors (maybe do this as it happens?)
+        if (move):
+            self.update_move()
+        # (3) Update agent sensors
+        self.update_proximity()
+
+    def update_proximity(self):
+        """Update proximity sensors of all agents in world."""
+        for loc in self.agents:
+            agent = self.agents[loc]
+            for direction in Direction:
+                agent.proximity[direction.value] = self.next_loc(loc, direction) in self.agents
 
     def update_move(self):
         """Move world components one step."""
@@ -50,7 +59,7 @@ class World:
             return self.update_agent_loc(loc, loc, moved_set, next_agents)
         # Move critical higher priority agents
         rec_set.add(loc)
-        next_loc = self.next_loc(loc)
+        next_loc = self.next_loc(loc, self.agents[loc].direction)
         crit_locs = self.critical_locs(next_loc)
         for crit_loc in crit_locs:
             if crit_loc == loc:
@@ -75,29 +84,6 @@ class World:
         moved_set.add(loc)
         return (moved_set, next_agents)
 
-    def next_loc(self, loc):
-        """Calculate next location of agent at [loc]."""
-        # Precondition: loc in self.agents
-        assert (loc in self.agents)
-        # Calculate next location
-        agent = self.agents[loc]
-        next_loc = loc
-        if agent.move:
-            x, y = loc
-            if agent.direction == Direction.NORTH:
-                # North
-                next_loc = (x, (y+1) % self.height)
-            elif agent.direction == Direction.SOUTH:
-                # South
-                next_loc = (x, (y-1) % self.height)
-            elif agent.direction == Direction.EAST:
-                # East
-                next_loc = ((x+1) % self.width, y)
-            else:
-                # West
-                next_loc = ((x-1) % self.width, y)
-        return next_loc
-
     def critical_locs(self, loc):
         """Find critical locations where agents could collide with [loc]."""
         x, y = loc
@@ -107,6 +93,23 @@ class World:
         critical_locs.append((x, (y+1) % self.height))
         critical_locs.append((x, (y-1) % self.height))
         return critical_locs
+
+    def next_loc(self, loc, direction):
+        """Return location 1 unit from [loc] in [direction]."""
+        x, y = loc
+        if direction == Direction.NORTH:
+            # North
+            next_loc = (x, (y+1) % self.height)
+        elif direction == Direction.SOUTH:
+            # South
+            next_loc = (x, (y-1) % self.height)
+        elif direction == Direction.EAST:
+            # East
+            next_loc = ((x+1) % self.width, y)
+        else:
+            # West
+            next_loc = ((x-1) % self.width, y)
+        return next_loc
 
     def __str__(self):
         string = ''
@@ -128,6 +131,7 @@ class Agent:
         self.direction = Direction.NORTH
         self.move = False
         self.moved = False
+        self.proximity = [False]*4
         # communication (sequence of bits)
         pass
 
