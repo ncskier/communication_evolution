@@ -1,6 +1,7 @@
 from models import World, Agent, Direction
 import pygame
 import math
+import os
 
 class View:
     """View to display world."""
@@ -128,4 +129,6 @@ class View:
 
     def save(self, path):
         """Save image of view to a file."""
+        if not os.path.exists(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
         pygame.image.save(self.screen, path)
