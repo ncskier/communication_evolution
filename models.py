@@ -133,6 +133,9 @@ class Agent:
         self.moved = False
         self.proximity = [False]*4
         # communication (sequence of bits)
+
+    def nn_input(self):
+        'Return input for neural network dependend on agent state.'
         pass
 
     def __str__(self):
