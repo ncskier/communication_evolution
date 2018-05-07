@@ -11,7 +11,7 @@ from functools import reduce
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, max_time=50, population_size=50, num_generations=10, world_size=(25,25)):
+    def __init__(self, draw=True, max_time=25, population_size=50, num_generations=30, world_size=(25,25)):
         self.max_time = max_time
         self.num_generations = num_generations
         # Initialize world
@@ -20,7 +20,9 @@ class Simulation:
         self.num_agents = population_size
         self.world.agents = self.initialize_agents(self.world)
         # Initialize view
-        self.view = View(self.world)
+        self.draw = draw
+        if self.draw:
+            self.view = View(self.world)
 
     def initialize_agents(self, world, nn_weights_list=None):
         """Add agents to [self.world]."""
@@ -30,6 +32,7 @@ class Simulation:
             agent = Agent(i)
             agent.move = bool(random.getrandbits(1))
             agent.direction = Direction(random.randrange(4))
+            agent.correct_direction = agent.direction
             agent.model = self.initialize_agent_nn()
             if nn_weights_list:
                 agent.model.set_weights(nn_weights_list[i])
@@ -44,24 +47,24 @@ class Simulation:
 
     def initialize_agent_nn(self):
         """Return neural network for agent."""
-        input_vars = 7
+        input_vars = 9
         layer_num_neurons = 7
         output_vars = 3
         model = Sequential()
         # Input - Layer
         model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
         # Hidden - Layers
-        model.add(Dense(layer_num_neurons, activation='sigmoid', kernel_initializer='uniform'))
-        model.add(Dense(layer_num_neurons, activation='sigmoid', kernel_initializer='uniform'))
+        model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+        # model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
         # Output - Layer
         model.add(Dense(output_vars, activation='sigmoid'))
         return model
 
-    def run(self, draw=True, retain=0.2, random_select=0.05, mutate=0.01, mutpb=0.6):
+    def run(self, retain=0.2, random_select=0.05, mutate=0.01, mutpb=0.6):
         """Run genetic algorithm."""
         for generation in range(0, self.num_generations):
             # Grade - [graded] is list of tuples ([score], model) - higher is better
-            self.run_world_simulation(generation, draw=draw)
+            self.run_world_simulation(generation)
             print('fitness gen {}:'.format(generation))
             graded = []
             self.fitnesses = []
@@ -108,27 +111,28 @@ class Simulation:
             self.world.agents = self.initialize_agents(self.world, nn_weights_list=nn_weights_list)
 
 
-    def run_world_simulation(self, generation, draw=True):
+    def run_world_simulation(self, generation):
         """Run agents through world simulation."""
         draw_path = 'out/test/gen{}/world'.format(generation)
         draw_ext = '.png'
-        self.view.draw(self.world)
-        self.view.save(draw_path+'0'+draw_ext)
+        if self.draw:
+            self.view.draw(self.world)
+            self.view.save(draw_path+'0'+draw_ext)
         for t in range(1, self.max_time):
-            self.update(draw=draw)
-            if draw:
+            self.update()
+            if self.draw:
                 self.view.save(draw_path+str(t)+draw_ext)
             # TODO: take this out - this is for a test fitness
             for loc in self.world.agents:
                 agent = self.world.agents[loc]
-                if agent.moved:
+                if agent.moved and agent.direction == agent.correct_direction:
                     agent.distance += 1
 
-    def update(self, draw=True):
+    def update(self):
         for loc in self.world.agents:
             self.update_agent(self.world.agents[loc])
         self.world.update()
-        if draw:
+        if self.draw:
             self.view.draw(self.world)
 
     def update_agent(self, agent):
@@ -151,7 +155,9 @@ class Simulation:
         moved = [int(agent.moved)]
         # [3:7] Proximity Sensors
         proximity = [int(i) for i in agent.proximity]
-        return np.concatenate([direction, moved, proximity])
+        # [7:9] Correct Direction
+        correct_direction = [int(i) for i in '{0:02b}'.format(agent.correct_direction.value)]
+        return np.concatenate([direction, moved, proximity, correct_direction])
 
     def parse_nn_output(self, y):
         """Return dictionary decoding numpy array of nn output."""
@@ -190,7 +196,7 @@ class Simulation:
 
 
 def main():
-    simulation = Simulation()
+    simulation = Simulation(draw=True)
     simulation.run()
 
 if __name__ == '__main__':
