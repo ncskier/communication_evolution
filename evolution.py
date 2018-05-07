@@ -3,17 +3,24 @@ from view import View
 import random
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.models import model_from_json
 from deap import tools
 import numpy as np
 from functools import reduce
+import sys
+import os
 
 
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, draw=True, max_time=25, population_size=50, num_generations=30, world_size=(25,25)):
+    def __init__(self, path='out/test/', draw=True, max_time=25, population_size=50, num_generations=30, world_size=(25,25)):
         self.max_time = max_time
         self.num_generations = num_generations
+        # Create path
+        self.path = path
+        if not os.path.exists(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
         # Initialize world
         world_width, world_height = world_size
         self.world = World(world_width, world_height)
@@ -81,6 +88,8 @@ class Simulation:
             print('\t{}'.format(self.fitnesses))
             retain_length = int(len(graded)*retain)
             parents = graded[:retain_length]
+            # Save generation with fitness
+            self.save_generation(generation)
             # Randomly add other individuals to promote genetic diversity
             for individual in graded[retain_length:]:
                 if random_select > random.random():
@@ -113,7 +122,7 @@ class Simulation:
 
     def run_world_simulation(self, generation):
         """Run agents through world simulation."""
-        draw_path = 'out/test/gen{}/world'.format(generation)
+        draw_path = '{}gen{}/world'.format(self.path, generation)
         draw_ext = '.png'
         if self.draw:
             self.view.draw(self.world)
@@ -191,12 +200,43 @@ class Simulation:
             pos += length
         return weights
 
+    def save_generation(self, generation):
+        """Save generation data to [self.path]/genXX/"""
+        # Set the path
+        generation_path = '{}gen{}/'.format(self.path, generation)
+        # Create directory if it does not exist
+        if not os.path.exists(os.path.dirname(generation_path)):
+            os.makedirs(os.path.dirname(generation_path))
+        # Save model to .json
+        model_path = '{}model.json'.format(generation_path)
+        with open(model_path, 'w') as f:
+            f.write(self.world.agents[list(self.world.agents.keys())[0]].model.to_json())
+        # Save all agent genomes (weights)
+        for loc in self.world.agents:
+            agent_path = '{}agent{}.hdf5'.format(generation_path, loc)
+            self.world.agents[loc].model.save_weights(agent_path)
+        # Save fitness
+        fitness_path = '{}fitness.csv'.format(generation_path)
+        with open(fitness_path, 'w') as f:
+            f.write(','.join(map(str, self.fitnesses)))
+
     def __str__(self):
         return str(self.world)
 
 
 def main():
-    simulation = Simulation(draw=True)
+    # argv[1] = project_name
+    if (len(sys.argv) > 1):
+        project_name = sys.argv[1]
+    else:
+        project_name = 'untitled'
+    # argv[2] = draw
+    if (len(sys.argv) > 2):
+        draw = (sys.argv[2] == 'True')
+    else:
+        draw = True
+    path = 'out/' + project_name + '/'
+    simulation = Simulation(path=path, draw=draw)
     simulation.run()
 
 if __name__ == '__main__':
