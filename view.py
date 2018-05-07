@@ -47,7 +47,7 @@ class View:
             # Draw agent triangle border
             border_color = (0, 0, 0)
             border_width = math.ceil(rect[2]*0.05)
-            if agent.move:
+            if agent.move and agent.direction == agent.correct_direction:
                 border_color = (255, 0, 0)
             pygame.draw.polygon(self.screen, border_color, pointlist, border_width)
         # Commit frame to screen

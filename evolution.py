@@ -14,9 +14,10 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=True, max_time=25, population_size=50, num_generations=30, world_size=(25,25)):
+    def __init__(self, path='out/test/', draw=False, max_time=25, population_size=25, num_generations=15, world_size=(25,25)):
         self.max_time = max_time
         self.num_generations = num_generations
+        self.generation = 0
         # Create path
         self.path = path
         if not os.path.exists(os.path.dirname(path)):
@@ -25,7 +26,7 @@ class Simulation:
         world_width, world_height = world_size
         self.world = World(world_width, world_height)
         self.num_agents = population_size
-        self.world.agents = self.initialize_agents(self.world)
+        self.initialize_agents(self.world)
         # Initialize view
         self.draw = draw
         if self.draw:
@@ -34,23 +35,32 @@ class Simulation:
     def initialize_agents(self, world, nn_weights_list=None):
         """Add agents to [self.world]."""
         # Precondition: [self.world] and [self.num_agents] must be defined
-        agents = {}
+        self.world.agents = {}
         for i in range(self.num_agents):
-            agent = Agent(i)
-            agent.move = bool(random.getrandbits(1))
-            agent.direction = Direction(random.randrange(4))
-            agent.correct_direction = agent.direction
-            agent.model = self.initialize_agent_nn()
+            nn_weights = None
             if nn_weights_list:
-                agent.model.set_weights(nn_weights_list[i])
-            agent.distance = 0
+                nn_weights = nn_weights_list[i]
+            self.initialize_agent(world, i, nn_weights=nn_weights)
+
+    def initialize_agent(self, world, i, nn_model=None, nn_weights=None):
+        agent = Agent(i)
+        agent.move = bool(random.getrandbits(1))
+        agent.direction = Direction(random.randrange(4))
+        agent.correct_direction = agent.direction
+        if nn_model:
+            agent.model = nn_model
+        else:
+            agent.model = self.initialize_agent_nn()
+            if nn_weights:
+                agent.model.set_weights(nn_weights)
+        agent.distance = 0
+        x = random.randrange(world.width)
+        y = random.randrange(world.height)
+        while (x, y) in self.world.agents:
             x = random.randrange(world.width)
             y = random.randrange(world.height)
-            while (x, y) in self.world.agents:
-                x = random.randrange(world.width)
-                y = random.randrange(world.height)
-            agents[(x, y)] = agent
-        return agents
+        self.world.agents[(x, y)] = agent
+        return (x, y)
 
     def initialize_agent_nn(self):
         """Return neural network for agent."""
@@ -69,21 +79,11 @@ class Simulation:
 
     def run(self, retain=0.2, random_select=0.05, mutate=0.01, mutpb=0.6):
         """Run genetic algorithm."""
-        for generation in range(0, self.num_generations):
+        for generation in range(self.generation, self.num_generations):
             # Grade - [graded] is list of tuples ([score], model) - higher is better
             self.run_world_simulation(generation)
             print('fitness gen {}:'.format(generation))
-            graded = []
-            self.fitnesses = []
-            for loc in self.world.agents:
-                agent = self.world.agents[loc]
-                graded.append(
-                    (self.fitness(agent, self.world),
-                    self.flatten_model_weights(agent.model.get_weights()))
-                )
-            graded = sorted(graded, key=lambda x: x[0], reverse=True)   # Higher fitness at front
-            self.fitnesses = [x[0] for x in graded]
-            graded = [x[1] for x in graded]
+            graded = self.evaluate_fitnesses()
             # print('{}'.format(graded))
             print('\t{}'.format(self.fitnesses))
             retain_length = int(len(graded)*retain)
@@ -117,8 +117,7 @@ class Simulation:
             # Create new population
             parents.extend(children)
             nn_weights_list = [self.unflatten_model_weights(x) for x in parents]
-            self.world.agents = self.initialize_agents(self.world, nn_weights_list=nn_weights_list)
-
+            self.initialize_agents(self.world, nn_weights_list=nn_weights_list)
 
     def run_world_simulation(self, generation):
         """Run agents through world simulation."""
@@ -127,6 +126,7 @@ class Simulation:
         if self.draw:
             self.view.draw(self.world)
             self.view.save(draw_path+'0'+draw_ext)
+        print('max_time: {}'.format(self.max_time))
         for t in range(1, self.max_time):
             self.update()
             if self.draw:
@@ -136,6 +136,36 @@ class Simulation:
                 agent = self.world.agents[loc]
                 if agent.moved and agent.direction == agent.correct_direction:
                     agent.distance += 1
+
+    def evaluate_fitnesses(self):
+        """Evaluate fitnesses to [self.fitnesses]."""
+        graded = []
+        self.fitnesses = []
+        for loc in self.world.agents:
+            agent = self.world.agents[loc]
+            graded.append(
+                (self.fitness(agent, self.world),
+                self.flatten_model_weights(agent.model.get_weights()))
+            )
+        graded = sorted(graded, key=lambda x: x[0], reverse=True)   # Higher fitness at front
+        self.fitnesses = [x[0] for x in graded]
+        graded = [x[1] for x in graded]
+        return graded
+
+    def visualize(self):
+        """Save visualization of generation."""
+        draw = self.draw
+        self.draw = True
+        self.view = View(self.world)
+        self.run_world_simulation(self.generation)
+        self.evaluate_fitnesses()
+        # Save fitness
+        generation_path = '{}gen{}/'.format(self.path, self.generation)
+        fitness_path = '{}fitness.csv'.format(generation_path)
+        with open(fitness_path, 'w') as f:
+            f.write(','.join(map(str, self.fitnesses)))
+        print('\t{}'.format(self.fitnesses))
+        self.draw = draw
 
     def update(self):
         for loc in self.world.agents:
@@ -220,24 +250,112 @@ class Simulation:
         with open(fitness_path, 'w') as f:
             f.write(','.join(map(str, self.fitnesses)))
 
+    def load_generation(self, generation=-1):
+        """Load generation data from [self.path]/gen[generation]/"""
+        # Set path - if no generation specified, load the last one
+        if (generation == -1):
+            gen_dir = sorted(os.listdir(self.path))[-1]
+            generation_path = '{}{}/'.format(self.path, gen_dir)
+            self.generation = int(gen_dir[3:])
+        else:
+            generation_path = '{}gen{}/'.format(self.path, generation)
+            self.generation = generation
+        # Iterate over agents
+        self.world.agents.clear()
+        model_path = '{}model.json'.format(generation_path)
+        i = 0
+        for name in os.listdir(generation_path):
+            if ('agent' not in name):
+                continue
+            agent_path = '{}{}'.format(generation_path, name)
+            print(agent_path)
+            with open(model_path, 'r') as f:
+                model =  model_from_json(f.read())
+            model.load_weights(agent_path)
+            self.initialize_agent(self.world, i, nn_model=model)
+            i += 1
+
     def __str__(self):
         return str(self.world)
 
 
-def main():
-    # argv[1] = project_name
-    if (len(sys.argv) > 1):
-        project_name = sys.argv[1]
+
+def visualize_generation():
+    """Visualize simulation of specified generation."""
+    # argv[2] = project_name
+    if (len(sys.argv) > 2):
+        project_name = sys.argv[2]
     else:
         project_name = 'untitled'
-    # argv[2] = draw
-    if (len(sys.argv) > 2):
-        draw = (sys.argv[2] == 'True')
+    # argv[3] = generation (-1 specifies the last generation of the project)
+    if (len(sys.argv) > 3):
+        generation = int(sys.argv[3])
     else:
-        draw = True
+        generation = -1
+    path = 'out/' + project_name + '/'
+    simulation = Simulation(path=path)
+    simulation.load_generation(generation=generation)
+    simulation.visualize()
+
+def continue_evolution():
+    """Continue runing an evolution from specified generation."""
+    # argv[2] = project_name
+    if (len(sys.argv) > 2):
+        project_name = sys.argv[2]
+    else:
+        project_name = 'untitled'
+    # argv[3] = generation (-1 specifies the last generation of the project)
+    if (len(sys.argv) > 3):
+        generation = int(sys.argv[3])
+    else:
+        generation = -1
+    # argv[4] = draw
+    if (len(sys.argv) > 4):
+        draw = (sys.argv[4] == 'True')
+    else:
+        draw = False
+    # Create simulation
+    path = 'out/' + project_name + '/'
+    simulation = Simulation(path=path, draw=draw)
+    simulation.load_generation(generation=generation)
+    simulation.generation += 1
+    simulation.run()
+
+def run_evolution():
+    """Create a simulation and run the evolution."""
+    # argv[2] = project_name
+    if (len(sys.argv) > 2):
+        project_name = sys.argv[2]
+    else:
+        project_name = 'untitled'
+    # argv[3] = draw
+    if (len(sys.argv) > 3):
+        draw = (sys.argv[3] == 'True')
+    else:
+        draw = False
+    # Create simulation
     path = 'out/' + project_name + '/'
     simulation = Simulation(path=path, draw=draw)
     simulation.run()
+
+def main():
+    # argv[1] = command (run | cont | vis)
+    # python3 evolution.py run [project_name] [draw]
+    # python3 evolution.py cont [project_name] [generation] [draw]
+    # python3 evolution.py vis [project_name] [generation]
+    if (len(sys.argv) > 1):
+        command = sys.argv[1]
+    else:
+        command = 'run'
+    if command == 'run':
+        run_evolution()
+    elif command == 'cont':
+        continue_evolution()
+    elif command == 'vis':
+        visualize_generation()
+    else:
+        print('ERROR: unknown command "{}" (run | cont | vis)')
+
 
 if __name__ == '__main__':
     main()
