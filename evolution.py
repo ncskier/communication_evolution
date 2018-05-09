@@ -46,14 +46,13 @@ class Simulation:
         agent = Agent(i)
         agent.move = bool(random.getrandbits(1))
         agent.direction = Direction(random.randrange(4))
-        agent.correct_direction = agent.direction
+        agent.team = random.getrandbits(1)
         if nn_model:
             agent.model = nn_model
         else:
             agent.model = self.initialize_agent_nn()
             if nn_weights:
                 agent.model.set_weights(nn_weights)
-        agent.distance = 0
         x = random.randrange(world.width)
         y = random.randrange(world.height)
         while (x, y) in self.world.agents:
@@ -64,8 +63,8 @@ class Simulation:
 
     def initialize_agent_nn(self):
         """Return neural network for agent."""
-        input_vars = 9
-        layer_num_neurons = 7
+        input_vars = 12
+        layer_num_neurons = 12
         output_vars = 3
         model = Sequential()
         # Input - Layer
@@ -131,11 +130,6 @@ class Simulation:
             self.update()
             if self.draw:
                 self.view.save(draw_path+str(t)+draw_ext)
-            # TODO: take this out - this is for a test fitness
-            for loc in self.world.agents:
-                agent = self.world.agents[loc]
-                if agent.moved and agent.direction == agent.correct_direction:
-                    agent.distance += 1
 
     def evaluate_fitnesses(self):
         """Evaluate fitnesses to [self.fitnesses]."""
@@ -144,7 +138,7 @@ class Simulation:
         for loc in self.world.agents:
             agent = self.world.agents[loc]
             graded.append(
-                (self.fitness(agent, self.world),
+                (self.fitness(loc, self.world),
                 self.flatten_model_weights(agent.model.get_weights()))
             )
         graded = sorted(graded, key=lambda x: x[0], reverse=True)   # Higher fitness at front
@@ -194,9 +188,11 @@ class Simulation:
         moved = [int(agent.moved)]
         # [3:7] Proximity Sensors
         proximity = [int(i) for i in agent.proximity]
-        # [7:9] Correct Direction
-        correct_direction = [int(i) for i in '{0:02b}'.format(agent.correct_direction.value)]
-        return np.concatenate([direction, moved, proximity, correct_direction])
+        # [7:11] Team Proximity Sensors
+        team_proximity = [int(i) for i in agent.team_proximity]
+        # [11:12] Team
+        team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
+        return np.concatenate([direction, moved, proximity, team_proximity, team_id])
 
     def parse_nn_output(self, y):
         """Return dictionary decoding numpy array of nn output."""
@@ -207,9 +203,19 @@ class Simulation:
         output['move'] = bool(y[2])
         return output
 
-    def fitness(self, agent, world):
-        """Return fitness of [agent] higher is better than lower."""
-        return agent.distance
+    def fitness(self, loc, world):
+        """Return fitness of agent at [loc] higher is better than lower."""
+        fitness = 0
+        agent = world.agents[loc]
+        next_loc = world.next_loc(loc, agent.direction)
+        if next_loc in world.agents:
+            fitness += 5
+            adjacent_agent = world.agents[next_loc]
+            if agent.team != adjacent_agent.team:
+                fitness += 10
+                if loc == world.next_loc(next_loc, adjacent_agent.direction):
+                    fitness += 5
+        return fitness
 
     def flatten_model_weights(self, weights):
         """Flatten model [weights] with [shapes] into a single numpy array."""
