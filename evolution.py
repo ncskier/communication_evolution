@@ -14,14 +14,18 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=50, population_size=25, num_generations=50, world_size=(25,25)):
+    def __init__(self, path='out/test/', draw=False, max_time=50, population_size=35, num_generations=50, world_size=(25,25)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
+        self.recurrent_nodes = 10
         # Create path
         self.path = path
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
+        stats_path = '{}stats.csv'.format(self.path)
+        with open(stats_path, 'w') as f:
+            f.write('mean')
         # Initialize world
         world_width, world_height = world_size
         self.world = World(world_width, world_height)
@@ -59,6 +63,7 @@ class Simulation:
         agent.move = bool(random.getrandbits(1))
         agent.direction = Direction(random.randrange(4))
         agent.team = team
+        agent.recurrent_memory = np.array(self.recurrent_nodes*[0.0])
         if nn_model:
             agent.model = nn_model
         else:
@@ -75,9 +80,9 @@ class Simulation:
 
     def initialize_agent_nn(self):
         """Return neural network for agent."""
-        input_vars = 12
-        layer_num_neurons = 12
-        output_vars = 3
+        input_vars = 12 + self.recurrent_nodes
+        layer_num_neurons = 12 + self.recurrent_nodes
+        output_vars = 3 + self.recurrent_nodes
         model = Sequential()
         # Input - Layer
         model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
@@ -217,6 +222,7 @@ class Simulation:
         output = self.parse_nn_output(predict_y_int)
         agent.direction = output['direction']
         agent.move = output['move']
+        agent.recurrent_memory = output['recurrent_memory']
 
     def build_nn_input(self, agent):
         """Return input numpy array for agent model."""
@@ -230,7 +236,9 @@ class Simulation:
         team_proximity = [int(i) for i in agent.team_proximity]
         # [11:12] Team
         team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
-        return np.concatenate([direction, moved, proximity, team_proximity, team_id])
+        # [12:12+self.recurrent_nodes]
+        recurrent = agent.recurrent_memory
+        return np.concatenate([direction, moved, proximity, team_proximity, team_id, recurrent])
 
     def parse_nn_output(self, y):
         """Return dictionary decoding numpy array of nn output."""
@@ -239,6 +247,8 @@ class Simulation:
         output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
         # [2:3] Move
         output['move'] = bool(y[2])
+        # [3:3+self.recurrent_nodes]
+        output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
         return output
 
     def fitness(self, loc, world, one=False):
@@ -300,6 +310,10 @@ class Simulation:
             f.write('private_id,{}'.format(','.join(map(str, self.private_ids))))
             f.write('\nfitnesses,{}'.format(','.join(map(str, self.fitnesses))))
             f.write('\nmean,{}'.format(mean))
+        # Save stats
+        stats_path = '{}stats.csv'.format(self.path)
+        with open(stats_path, 'a') as f:
+            f.write(',\n{}'.format(mean))
 
     def load_generation(self, generation=-1):
         """Load generation data from [self.path]/gen[generation]/"""
