@@ -34,7 +34,7 @@ class World:
             for direction in Direction:
                 agent.proximity[direction.value] = self.next_loc(loc, direction) in self.agents
                 if agent.proximity[direction.value]:
-                    agent.team_proximity[direction.value] = (self.agents[self.next_loc(loc, direction)].team != agent.team)
+                    agent.team_proximity[direction.value] = (self.agents[self.next_loc(loc, direction)].team)
 
     def update_move(self):
         """Move world components one step."""
