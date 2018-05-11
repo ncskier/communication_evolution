@@ -25,7 +25,10 @@ class Simulation:
             os.makedirs(os.path.dirname(path))
         stats_path = '{}stats.csv'.format(self.path)
         with open(stats_path, 'w') as f:
-            f.write('mean')
+            f.write('population size, {}\n'.format(population_size))
+            f.write('world simulation time, {}\n'.format(max_time))
+            f.write('world size, {} by {}\n'.format(world_size[0], world_size[1]))
+            f.write('\nmean, fitness one agent worlds')
         # Initialize world
         world_width, world_height = world_size
         self.world = World(world_width, world_height)
@@ -108,7 +111,7 @@ class Simulation:
             retain_length = int(len(graded)*retain)
             parents = graded[:retain_length]
             # Save generation with fitness
-            self.save_generation(generation)
+            self.save_generation(generation, one)
             # Randomly add other individuals to promote genetic diversity
             for individual in graded[retain_length:]:
                 if random_select > random.random():
@@ -287,7 +290,7 @@ class Simulation:
             pos += length
         return weights
 
-    def save_generation(self, generation):
+    def save_generation(self, generation, one):
         """Save generation data to [self.path]/genXX/"""
         # Set the path
         generation_path = '{}gen{}/'.format(self.path, generation)
@@ -313,7 +316,7 @@ class Simulation:
         # Save stats
         stats_path = '{}stats.csv'.format(self.path)
         with open(stats_path, 'a') as f:
-            f.write(',\n{}'.format(mean))
+            f.write('\n{}, {}'.format(mean, one))
 
     def load_generation(self, generation=-1):
         """Load generation data from [self.path]/gen[generation]/"""
