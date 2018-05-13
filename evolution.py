@@ -14,7 +14,7 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=50, population_size=35, num_generations=20, world_size=(25,25)):
+    def __init__(self, path='out/test/', draw=False, max_time=50, population_size=35, num_generations=50, world_size=(25,25)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
@@ -24,11 +24,12 @@ class Simulation:
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
         stats_path = '{}stats.csv'.format(self.path)
-        with open(stats_path, 'w') as f:
-            f.write('population size, {}\n'.format(population_size))
-            f.write('world simulation time, {}\n'.format(max_time))
-            f.write('world size, {} by {}\n'.format(world_size[0], world_size[1]))
-            f.write('\ngen, mean, max, min, fitness one agent worlds, fitness description, nn description')
+        if not os.path.exists(stats_path):
+            with open(stats_path, 'w') as f:
+                f.write('population size, {}\n'.format(population_size))
+                f.write('world simulation time, {}\n'.format(max_time))
+                f.write('world size, {} by {}\n'.format(world_size[0], world_size[1]))
+                f.write('\ngen, mean, max, min, fitness one agent worlds, fitness description, nn description')
         # Initialize world
         world_width, world_height = world_size
         self.world = World(world_width, world_height)
@@ -199,7 +200,23 @@ class Simulation:
         if self.draw:
             self.view.draw(world)
 
-    # VARIABLE
+    # # VARIABLE -------------------------------------------------------------
+    # # NO Communication
+    # def update_agent(self, agent):
+    #     """Run agent neural network (model) and update its state."""
+    #     # Create input
+    #     x = self.build_nn_input(agent)
+    #     # Run input on agent model
+    #     predict_y = agent.model.predict(np.array([x]))
+    #     predict_y_int = np.rint(predict_y[0]).astype(int)
+    #     # Parse output & update agent
+    #     output = self.parse_nn_output(predict_y_int)
+    #     agent.direction = output['direction']
+    #     agent.move = output['move']
+    #     agent.recurrent_memory = output['recurrent_memory']
+
+    # VARIABLE -------------------------------------------------------------
+    # Communication
     def update_agent(self, agent):
         """Run agent neural network (model) and update its state."""
         # Create input
@@ -211,6 +228,7 @@ class Simulation:
         output = self.parse_nn_output(predict_y_int)
         agent.direction = output['direction']
         agent.move = output['move']
+        agent.comm_out = output['comm_out']
         agent.recurrent_memory = output['recurrent_memory']
 
     # # VARIABLE -------------------------------------------------------------
@@ -260,52 +278,52 @@ class Simulation:
     #     output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
     #     return output
 
-    # VARIABLE -------------------------------------------------------------
-    # Recurrent nodes & proximity team
-    def initialize_agent_nn(self):
-        """Return neural network for agent."""
-        self.nn_name = 'know team and has recurrent nodes - 2 hidden layers'
-        input_vars = 12 + self.recurrent_nodes
-        layer_num_neurons = 12 + self.recurrent_nodes
-        output_vars = 3 + self.recurrent_nodes
-        model = Sequential()
-        # Input - Layer
-        model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
-        # Hidden - Layers
-        model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
-        model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
-        # Output - Layer
-        model.add(Dense(output_vars, activation='sigmoid'))
-        return model
+    # # VARIABLE -------------------------------------------------------------
+    # # Recurrent nodes & proximity team
+    # def initialize_agent_nn(self):
+    #     """Return neural network for agent."""
+    #     self.nn_name = 'know team and has recurrent nodes - 2 hidden layers'
+    #     input_vars = 12 + self.recurrent_nodes
+    #     layer_num_neurons = 12 + self.recurrent_nodes
+    #     output_vars = 3 + self.recurrent_nodes
+    #     model = Sequential()
+    #     # Input - Layer
+    #     model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
+    #     # Hidden - Layers
+    #     model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+    #     model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+    #     # Output - Layer
+    #     model.add(Dense(output_vars, activation='sigmoid'))
+    #     return model
 
-    # VARIABLE
-    def build_nn_input(self, agent):
-        """Return input numpy array for agent model."""
-        # [0:2] Direction
-        direction = [int(i) for i in '{0:02b}'.format(agent.direction.value)]
-        # [2:3] Moved
-        moved = [int(agent.moved)]
-        # [3:7] Proximity Sensors
-        proximity = [int(i) for i in agent.proximity]
-        # [7:11] Team Proximity Sensors
-        team_proximity = [int(i) for i in agent.team_proximity]
-        # [11:12] Team
-        team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
-        # [12:12+self.recurrent_nodes]
-        recurrent = agent.recurrent_memory
-        return np.concatenate([direction, moved, proximity, team_proximity, team_id, recurrent])
+    # # VARIABLE
+    # def build_nn_input(self, agent):
+    #     """Return input numpy array for agent model."""
+    #     # [0:2] Direction
+    #     direction = [int(i) for i in '{0:02b}'.format(agent.direction.value)]
+    #     # [2:3] Moved
+    #     moved = [int(agent.moved)]
+    #     # [3:7] Proximity Sensors
+    #     proximity = [int(i) for i in agent.proximity]
+    #     # [7:11] Team Proximity Sensors
+    #     team_proximity = [int(i) for i in agent.team_proximity]
+    #     # [11:12] Team
+    #     team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
+    #     # [12:12+self.recurrent_nodes]
+    #     recurrent = agent.recurrent_memory
+    #     return np.concatenate([direction, moved, proximity, team_proximity, team_id, recurrent])
 
-    # VARIABLE
-    def parse_nn_output(self, y):
-        """Return dictionary decoding numpy array of nn output."""
-        output = {}
-        # [0:2] Direction
-        output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
-        # [2:3] Move
-        output['move'] = bool(y[2])
-        # [3:3+self.recurrent_nodes]
-        output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
-        return output
+    # # VARIABLE
+    # def parse_nn_output(self, y):
+    #     """Return dictionary decoding numpy array of nn output."""
+    #     output = {}
+    #     # [0:2] Direction
+    #     output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
+    #     # [2:3] Move
+    #     output['move'] = bool(y[2])
+    #     # [3:3+self.recurrent_nodes]
+    #     output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
+    #     return output
 
     # # VARIABLE -------------------------------------------------------------
     # # Recurrent nodes & No knowledge of other teams
@@ -351,6 +369,55 @@ class Simulation:
     #     # [3:3+self.recurrent_nodes]
     #     output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
     #     return output
+
+    # VARIABLE -------------------------------------------------------------
+    # Communication 5 bits & Recurrent nodes & No knowledge of other teams
+    def initialize_agent_nn(self):
+        """Return neural network for agent."""
+        self.nn_name = 'Communication 5 bits. NO knowledge of others team and has recurrent nodes. Knows own team.'
+        input_vars = 13 + self.recurrent_nodes
+        layer_num_neurons = 13 + self.recurrent_nodes
+        output_vars = 8 + self.recurrent_nodes
+        model = Sequential()
+        # Input - Layer
+        model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
+        # Hidden - Layers
+        model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+        # model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+        # Output - Layer
+        model.add(Dense(output_vars, activation='sigmoid'))
+        return model
+
+    # VARIABLE
+    def build_nn_input(self, agent):
+        """Return input numpy array for agent model."""
+        # [0:2] Direction
+        direction = [int(i) for i in '{0:02b}'.format(agent.direction.value)]
+        # [2:3] Moved
+        moved = [int(agent.moved)]
+        # [3:7] Proximity Sensors
+        proximity = [int(i) for i in agent.proximity]
+        # [7:8] Team
+        team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
+        # [8:13] Comm In
+        comm_in = [int(i) for i in agent.comm_in]
+        # [13:13+self.recurrent_nodes]
+        recurrent = agent.recurrent_memory
+        return np.concatenate([direction, moved, proximity, team_id, comm_in, recurrent])
+
+    # VARIABLE
+    def parse_nn_output(self, y):
+        """Return dictionary decoding numpy array of nn output."""
+        output = {}
+        # [0:2] Direction
+        output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
+        # [2:3] Move
+        output['move'] = bool(y[2])
+        # [3:8] Comm Out
+        output['comm_out'] = [bool(x) for x in y[3:8]]
+        # [8:8+self.recurrent_nodes]
+        output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
+        return output
 
     # VARIABLE -------------------------------------------------------------
     # def fitness(self, loc, world, one=False):

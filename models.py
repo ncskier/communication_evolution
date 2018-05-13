@@ -18,14 +18,27 @@ class World:
         self.height = height
         self.agents = {}
 
-    def update(self, move=True):
+    def update(self, move=True, comm=True):
         """Update world one step."""
         # (1) Communication between agents
+        if (comm):
+            self.update_comm()
         # (2) Move agents based on their state
         if (move):
             self.update_move()
         # (3) Update agent sensors
         self.update_proximity()
+
+    def update_comm(self):
+        """Update communication between agents."""
+        for loc in self.agents:
+            agent = self.agents[loc]
+            agent.comm_in = [False]*agent.comm_bits
+            next_loc = self.next_loc(loc, agent.direction)
+            if next_loc in self.agents:
+                adjacent_agent = self.agents[next_loc]
+                if loc == self.next_loc(next_loc, adjacent_agent.direction):
+                    agent.comm_in = adjacent_agent.comm_out
 
     def update_proximity(self):
         """Update proximity sensors of all agents in world."""
@@ -136,6 +149,9 @@ class Agent:
         self.proximity = [False]*4
         self.team_proximity = [False]*4
         # communication (sequence of bits)
+        self.comm_bits = 5
+        self.comm_in = [False]*self.comm_bits
+        self.comm_out = [False]*self.comm_bits
 
     def nn_input(self):
         'Return input for neural network dependend on agent state.'
