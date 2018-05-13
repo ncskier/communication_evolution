@@ -261,19 +261,19 @@ class Simulation:
     #     return output
 
     # VARIABLE -------------------------------------------------------------
-    # Recurrent nodes & No knowledge of other teams
+    # Recurrent nodes & proximity team
     def initialize_agent_nn(self):
         """Return neural network for agent."""
-        self.nn_name = 'NO knowledge of others team and has recurrent nodes. Knows own team'
-        input_vars = 8 + self.recurrent_nodes
-        layer_num_neurons = 8 + self.recurrent_nodes
+        self.nn_name = 'know team and has recurrent nodes - 2 hidden layers'
+        input_vars = 12 + self.recurrent_nodes
+        layer_num_neurons = 12 + self.recurrent_nodes
         output_vars = 3 + self.recurrent_nodes
         model = Sequential()
         # Input - Layer
         model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
         # Hidden - Layers
         model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
-        # model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+        model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
         # Output - Layer
         model.add(Dense(output_vars, activation='sigmoid'))
         return model
@@ -287,11 +287,13 @@ class Simulation:
         moved = [int(agent.moved)]
         # [3:7] Proximity Sensors
         proximity = [int(i) for i in agent.proximity]
-        # [7:8] Team
+        # [7:11] Team Proximity Sensors
+        team_proximity = [int(i) for i in agent.team_proximity]
+        # [11:12] Team
         team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
-        # [8:8+self.recurrent_nodes]
+        # [12:12+self.recurrent_nodes]
         recurrent = agent.recurrent_memory
-        return np.concatenate([direction, moved, proximity, team_id, recurrent])
+        return np.concatenate([direction, moved, proximity, team_proximity, team_id, recurrent])
 
     # VARIABLE
     def parse_nn_output(self, y):
@@ -304,6 +306,51 @@ class Simulation:
         # [3:3+self.recurrent_nodes]
         output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
         return output
+
+    # # VARIABLE -------------------------------------------------------------
+    # # Recurrent nodes & No knowledge of other teams
+    # def initialize_agent_nn(self):
+    #     """Return neural network for agent."""
+    #     self.nn_name = 'NO knowledge of others team and has recurrent nodes. Knows own team'
+    #     input_vars = 8 + self.recurrent_nodes
+    #     layer_num_neurons = 8 + self.recurrent_nodes
+    #     output_vars = 3 + self.recurrent_nodes
+    #     model = Sequential()
+    #     # Input - Layer
+    #     model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer='uniform'))
+    #     # Hidden - Layers
+    #     model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+    #     # model.add(Dense(layer_num_neurons, activation='relu', kernel_initializer='uniform'))
+    #     # Output - Layer
+    #     model.add(Dense(output_vars, activation='sigmoid'))
+    #     return model
+
+    # # VARIABLE
+    # def build_nn_input(self, agent):
+    #     """Return input numpy array for agent model."""
+    #     # [0:2] Direction
+    #     direction = [int(i) for i in '{0:02b}'.format(agent.direction.value)]
+    #     # [2:3] Moved
+    #     moved = [int(agent.moved)]
+    #     # [3:7] Proximity Sensors
+    #     proximity = [int(i) for i in agent.proximity]
+    #     # [7:8] Team
+    #     team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
+    #     # [8:8+self.recurrent_nodes]
+    #     recurrent = agent.recurrent_memory
+    #     return np.concatenate([direction, moved, proximity, team_id, recurrent])
+
+    # # VARIABLE
+    # def parse_nn_output(self, y):
+    #     """Return dictionary decoding numpy array of nn output."""
+    #     output = {}
+    #     # [0:2] Direction
+    #     output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
+    #     # [2:3] Move
+    #     output['move'] = bool(y[2])
+    #     # [3:3+self.recurrent_nodes]
+    #     output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
+    #     return output
 
     # VARIABLE -------------------------------------------------------------
     # def fitness(self, loc, world, one=False):
