@@ -85,13 +85,16 @@ class World:
                 continue
             elif (crit_loc in self.agents) and (crit_loc not in moved_set):
                 if crit_loc == next_loc:
-                    _, next_agents = self.move_agent(crit_loc, rec_set, moved_set, next_agents)
+                    moved_set, next_agents = self.move_agent(crit_loc, rec_set, moved_set, next_agents)
                 elif (not self.agents[crit_loc].move) or (self.agents[crit_loc].direction.value < self.agents[loc].direction.value):
-                    _, next_agents = self.move_agent(crit_loc, rec_set, moved_set, next_agents)
+                    moved_set, next_agents = self.move_agent(crit_loc, rec_set, moved_set, next_agents)
         # Move agent
-        if next_loc in next_agents:
-            return self.update_agent_loc(loc, loc, moved_set, next_agents)
-        return self.update_agent_loc(loc, next_loc, moved_set, next_agents)
+        if loc not in moved_set:
+            if next_loc in next_agents:
+                return self.update_agent_loc(loc, loc, moved_set, next_agents)
+            return self.update_agent_loc(loc, next_loc, moved_set, next_agents)
+        else:
+            return moved_set, next_agents
 
     def update_agent_loc(self, loc, next_loc, moved_set, next_agents):
         """Update agent location from [loc] to [next_loc]."""
@@ -152,6 +155,7 @@ class Agent:
         self.moved = False
         self.proximity = [False]*4
         self.team_proximity = 0
+        self.team = 0
         # communication (sequence of bits)
         self.comm_bits = 5
         self.comm_in = [False]*self.comm_bits

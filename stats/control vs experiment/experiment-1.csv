@@ -1,0 +1,25 @@
+population size, 13
+world simulation time, 50
+world size, 5 by 5
+
+gen, mean, max, min, comms, fitness one agent worlds, fitness description, nn description
+0, 0.947, 6.154, 0.000, 748, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+1, 1.420, 6.154, 0.000, 1044, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+2, 3.314, 6.154, 0.000, 2164, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+3, 3.314, 12.308, 0.000, 2144, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+4, 3.314, 6.154, 0.000, 2170, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+5, 3.077, 9.231, 0.000, 2280, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+6, 2.840, 9.231, 0.000, 2338, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+7, 3.550, 12.308, 0.000, 2354, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+8, 3.550, 12.308, 0.000, 2118, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+9, 5.444, 9.231, 0.000, 2242, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+10, 4.734, 9.231, 0.000, 2236, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+11, 4.024, 9.231, 0.000, 2210, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+12, 3.787, 9.231, 0.000, 2194, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+13, 2.367, 6.154, 0.000, 2188, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+14, 3.787, 6.154, 0.000, 2160, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+15, 4.260, 9.231, 0.000, 2176, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+16, 3.550, 9.231, 0.000, 2192, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+17, 2.840, 9.231, 0.000, 2098, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+18, 4.024, 9.231, 0.000, 2208, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init
+19, 2.367, 9.231, 0.000, 2188, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Experiment 1 - random kernel init

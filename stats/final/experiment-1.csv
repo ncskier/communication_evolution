@@ -1,0 +1,33 @@
+population size, 100
+one population size, 13
+world simulation time, 35
+world size, 20 by 20
+
+gen, mean, max, min, comms, fitness one agent worlds, fitness description, nn description
+0, 2.185, 13.077, 0.000, 2624, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+1, 2.646, 10.385, 0.000, 5688, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+2, 3.842, 13.077, 0.000, 8134, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+3, 4.065, 13.462, 0.000, 10990, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+4, 4.762, 15.769, 0.385, 13190, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+5, 5.542, 12.692, 0.000, 15472, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+6, 5.023, 15.769, 0.000, 14066, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+7, 5.504, 13.462, 0.385, 14516, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+8, 5.719, 15.385, 0.000, 16362, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+9, 7.058, 16.154, 0.385, 18688, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+10, 6.873, 13.462, 0.385, 17950, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+11, 7.115, 15.385, 0.385, 19192, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+12, 7.565, 16.154, 0.769, 19658, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+13, 7.569, 13.462, 0.769, 19384, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+14, 7.323, 13.462, 0.769, 19720, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+15, 7.312, 15.769, 0.385, 19778, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+16, 7.731, 15.769, 0.385, 19932, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+17, 8.142, 16.154, 0.769, 20038, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+18, 6.881, 16.154, 0.385, 19562, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+19, 7.396, 16.154, 0.769, 19790, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+20, 7.900, 16.154, 0.000, 19604, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+21, 7.185, 16.154, 0.769, 19942, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+22, 6.950, 16.154, 0.385, 19110, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+23, 7.596, 15.769, 0.385, 19180, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+24, 7.758, 15.769, 0.769, 20054, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+25, 6.565, 16.154, 0.385, 17406, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init
+26, 7.227, 16.154, 0.385, 18714, True, points for facing an adjacent opposite team agent. most points for a match, Experiment 1 - random kernel init

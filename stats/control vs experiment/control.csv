@@ -1,0 +1,25 @@
+population size, 13
+world simulation time, 50
+world size, 5 by 5
+
+gen, mean, max, min, comms, fitness one agent worlds, fitness description, nn description
+0, 0.237, 3.077, 0.000, 304, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+1, 0.237, 3.077, 0.000, 274, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+2, 1.657, 6.154, 0.000, 1414, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+3, 3.787, 9.231, 0.000, 1950, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+4, 3.314, 6.154, 0.000, 1692, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+5, 0.710, 3.077, 0.000, 710, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+6, 1.420, 6.154, 0.000, 1422, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+7, 2.367, 9.231, 0.000, 1642, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+8, 2.604, 6.154, 0.000, 2336, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+9, 5.917, 12.308, 0.000, 3498, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+10, 5.680, 9.231, 3.077, 4860, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+11, 7.101, 12.308, 3.077, 4748, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+12, 7.574, 15.385, 0.000, 5018, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+13, 5.680, 12.308, 0.000, 4266, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+14, 8.047, 12.308, 3.077, 4892, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+15, 7.337, 12.308, 0.000, 4676, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+16, 7.337, 12.308, 3.077, 4808, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+17, 6.864, 9.231, 3.077, 4854, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+18, 6.627, 15.385, 0.000, 5018, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init
+19, 6.864, 12.308, 3.077, 4558, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, Control - random kernel init

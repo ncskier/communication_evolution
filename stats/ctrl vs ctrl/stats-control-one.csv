@@ -1,0 +1,25 @@
+population size, 35
+world simulation time, 50
+world size, 25 by 25
+
+gen, mean, max, min, fitness one agent worlds, fitness description, nn description
+0, 0.686, 6.857, 0.000, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+1, 2.416, 13.714, 0.000, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+2, 3.004, 12.571, 0.000, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+3, 3.984, 12.571, 0.000, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+4, 7.151, 11.429, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+5, 7.282, 11.429, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+6, 6.857, 12.571, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+7, 7.543, 11.429, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+8, 6.857, 10.286, 2.286, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+9, 7.184, 12.571, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+10, 7.380, 10.286, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+11, 7.347, 13.714, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+12, 7.445, 11.429, 4.571, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+13, 7.510, 10.286, 2.286, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+14, 7.314, 11.429, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+15, 6.139, 11.429, 0.000, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+16, 7.445, 11.429, 3.429, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+17, 6.922, 12.571, 2.286, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+18, 8.065, 11.429, 4.571, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
+19, 7.706, 12.571, 4.571, True, only perfect match fitness - this agent facing an opposite team agent facing this agent, NO knowledge of others team and has recurrent nodes. Knows own team
