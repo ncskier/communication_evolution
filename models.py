@@ -49,8 +49,8 @@ class World:
             agent = self.agents[loc]
             for direction in Direction:
                 agent.proximity[direction.value] = self.next_loc(loc, direction) in self.agents
-                if agent.proximity[direction.value]:
-                    agent.team_proximity[direction.value] = (self.agents[self.next_loc(loc, direction)].team)
+                if agent.proximity[direction.value] and agent.direction == direction:
+                    agent.team_proximity = self.agents[self.next_loc(loc, direction)].team
 
     def update_move(self):
         """Move world components one step."""
@@ -150,7 +150,7 @@ class Agent:
         self.move = False
         self.moved = False
         self.proximity = [False]*4
-        self.team_proximity = [False]*4
+        self.team_proximity = 0
         # communication (sequence of bits)
         self.comm_bits = 5
         self.comm_in = [False]*self.comm_bits
