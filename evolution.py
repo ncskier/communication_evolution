@@ -14,7 +14,7 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=50, population_size=13, num_generations=20, world_size=(5,5)):
+    def __init__(self, path='out/test/', draw=False, max_time=30, population_size=200, num_generations=100, world_size=(20,20)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
@@ -811,11 +811,29 @@ class Simulation:
     #     world.agents[loc].fitness = fitness
     #     return fitness
 
+    # # VARIABLE -------------------------------------------------------------
+    # # only (+) fitness if facing another agent from other team who is facing this agent
+    # def fitness(self, loc, world, one=False):
+    #     """Return fitness of agent at [loc] higher is better than lower."""
+    #     self.fitness_name = 'only perfect match fitness - this agent facing an opposite team agent facing this agent'
+    #     if one:
+    #         return world.agents[loc].fitness / len(world.agents)
+    #     fitness = 0
+    #     agent = world.agents[loc]
+    #     next_loc = world.next_loc(loc, agent.direction)
+    #     if next_loc in world.agents:
+    #         adjacent_agent = world.agents[next_loc]
+    #         if agent.team != adjacent_agent.team:
+    #             if loc == world.next_loc(next_loc, adjacent_agent.direction):
+    #                 fitness += 20
+    #     world.agents[loc].fitness = fitness
+    #     return fitness
+
     # VARIABLE -------------------------------------------------------------
     # only (+) fitness if facing another agent from other team who is facing this agent
     def fitness(self, loc, world, one=False):
         """Return fitness of agent at [loc] higher is better than lower."""
-        self.fitness_name = 'only perfect match fitness - this agent facing an opposite team agent facing this agent'
+        self.fitness_name = 'points for facing an adjacent opposite team agent. most points for a match'
         if one:
             return world.agents[loc].fitness / len(world.agents)
         fitness = 0
@@ -824,8 +842,9 @@ class Simulation:
         if next_loc in world.agents:
             adjacent_agent = world.agents[next_loc]
             if agent.team != adjacent_agent.team:
+                fitness += 1
                 if loc == world.next_loc(next_loc, adjacent_agent.direction):
-                    fitness += 20
+                    fitness += 19
         world.agents[loc].fitness = fitness
         return fitness
 
