@@ -41,15 +41,22 @@ class View:
             agent = world.agents[grid_loc]
             rect = self.agent_rect(grid_loc, world)
             # Draw agent triangle
-            color = self.agent_color(agent.private_id, world)
+            # color = self.agent_color(agent.private_id, world)
+            color = (0, 255, 0)
+            if agent.team:
+                color = (255, 0, 0)
             pointlist = self.agent_pointlist(rect, agent.direction)
             pygame.draw.polygon(self.screen, color, pointlist)
+            # Draw text
+            font = pygame.font.SysFont('monospace', 15)
+            label = font.render('{}'.format(agent.private_id), 1, (0, 0, 0))
+            self.screen.blit(label, rect[0:2])
             # Draw agent triangle border
-            border_color = (0, 0, 0)
-            border_width = math.ceil(rect[2]*0.05)
-            if agent.team:
-                border_color = (255, 0, 0)
-            pygame.draw.polygon(self.screen, border_color, pointlist, border_width)
+            # border_color = (0, 255, 0)
+            # border_width = math.ceil(rect[2]*0.05)
+            # if agent.team:
+            #     border_color = (255, 0, 0)
+            # pygame.draw.polygon(self.screen, border_color, pointlist, border_width)
         # Commit frame to screen
         pygame.display.flip()
 

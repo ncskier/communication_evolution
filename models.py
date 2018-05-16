@@ -17,6 +17,7 @@ class World:
         self.width = width
         self.height = height
         self.agents = {}
+        self.comms = []
 
     def update(self, move=True, comm=True):
         """Update world one step."""
@@ -39,6 +40,8 @@ class World:
                 adjacent_agent = self.agents[next_loc]
                 if loc == self.next_loc(next_loc, adjacent_agent.direction):
                     agent.comm_in = adjacent_agent.comm_out
+                    # Record comms
+                    self.comms.append((adjacent_agent.private_id, agent.private_id, adjacent_agent.comm_out))
 
     def update_proximity(self):
         """Update proximity sensors of all agents in world."""
