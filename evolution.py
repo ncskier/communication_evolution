@@ -641,9 +641,9 @@ class Simulation:
         self.nn_name = 'Control - random kernel init'
         kernel_init_options = ['zeros', 'ones', 'random_uniform', 'random_normal', 'truncated_normal', 'glorot_uniform']
         kernel_init = random.choice(kernel_init_options)
-        input_vars = 14 + self.recurrent_nodes
-        layer_num_neurons = 14 + self.recurrent_nodes
-        output_vars = 8 + self.recurrent_nodes
+        input_vars = 10 + self.recurrent_nodes
+        layer_num_neurons = 10 + self.recurrent_nodes
+        output_vars = 4 + self.recurrent_nodes
         model = Sequential()
         # Input - Layer
         model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer=kernel_init))
@@ -670,9 +670,9 @@ class Simulation:
         team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
         # [8:9] Team Proximity Sensor
         team_proximity = [0]
-        # [9:14] Comm In
-        comm_in = [0]*5
-        # [14:14+self.recurrent_nodes]
+        # [9:10] Comm In
+        comm_in = [0]
+        # [10:10+self.recurrent_nodes]
         recurrent = agent.recurrent_memory
         return np.concatenate([direction, moved, proximity, team_id, team_proximity, comm_in, recurrent])
 
@@ -684,10 +684,10 @@ class Simulation:
         output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
         # [2:3] Move
         output['move'] = bool(y[2])
-        # [3:8] Comm Out
-        output['comm_out'] = [False]*5
-        # [8:8+self.recurrent_nodes]
-        output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
+        # [3:4] Comm Out
+        output['comm_out'] = [False]
+        # [4:4+self.recurrent_nodes]
+        output['recurrent_memory'] = y[4:4+self.recurrent_nodes]
         return output
 
     # # VARIABLE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -697,9 +697,9 @@ class Simulation:
     #     self.nn_name = 'Experiment 1 - random kernel init'
     #     kernel_init_options = ['zeros', 'ones', 'random_uniform', 'random_normal', 'truncated_normal', 'glorot_uniform']
     #     kernel_init = random.choice(kernel_init_options)
-    #     input_vars = 14 + self.recurrent_nodes
-    #     layer_num_neurons = 14 + self.recurrent_nodes
-    #     output_vars = 8 + self.recurrent_nodes
+    #     input_vars = 10 + self.recurrent_nodes
+    #     layer_num_neurons = 10 + self.recurrent_nodes
+    #     output_vars = 4 + self.recurrent_nodes
     #     model = Sequential()
     #     # Input - Layer
     #     model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer=kernel_init))
@@ -726,9 +726,9 @@ class Simulation:
     #     team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
     #     # [8:9] Team Proximity Sensor
     #     team_proximity = [agent.team_proximity]
-    #     # [9:14] Comm In
-    #     comm_in = [0]*5
-    #     # [14:14+self.recurrent_nodes]
+    #     # [9:10] Comm In
+    #     comm_in = [0]
+    #     # [10:10+self.recurrent_nodes]
     #     recurrent = agent.recurrent_memory
     #     return np.concatenate([direction, moved, proximity, team_id, team_proximity, comm_in, recurrent])
 
@@ -740,10 +740,10 @@ class Simulation:
     #     output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
     #     # [2:3] Move
     #     output['move'] = bool(y[2])
-    #     # [3:8] Comm Out
-    #     output['comm_out'] = [False]*5
-    #     # [8:8+self.recurrent_nodes]
-    #     output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
+    #     # [3:4] Comm Out
+    #     output['comm_out'] = [False]
+    #     # [4:4+self.recurrent_nodes]
+    #     output['recurrent_memory'] = y[4:4+self.recurrent_nodes]
     #     return output
 
     # # VARIABLE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -753,9 +753,9 @@ class Simulation:
     #     self.nn_name = 'Experiment 2 - random kernel init'
     #     kernel_init_options = ['zeros', 'ones', 'random_uniform', 'random_normal', 'truncated_normal', 'glorot_uniform']
     #     kernel_init = random.choice(kernel_init_options)
-    #     input_vars = 14 + self.recurrent_nodes
-    #     layer_num_neurons = 14 + self.recurrent_nodes
-    #     output_vars = 8 + self.recurrent_nodes
+    #     input_vars = 10 + self.recurrent_nodes
+    #     layer_num_neurons = 10 + self.recurrent_nodes
+    #     output_vars = 4 + self.recurrent_nodes
     #     model = Sequential()
     #     # Input - Layer
     #     model.add(Dense(layer_num_neurons, input_shape=(input_vars,), activation='relu', kernel_initializer=kernel_init))
@@ -782,9 +782,9 @@ class Simulation:
     #     team_id = [int(i) for i in '{0:1b}'.format(agent.team)]
     #     # [8:9] Team Proximity Sensor
     #     team_proximity = [0]
-    #     # [9:14] Comm In
+    #     # [9:10] Comm In
     #     comm_in = [int(i) for i in agent.comm_in]
-    #     # [14:14+self.recurrent_nodes]
+    #     # [10:10+self.recurrent_nodes]
     #     recurrent = agent.recurrent_memory
     #     return np.concatenate([direction, moved, proximity, team_id, team_proximity, comm_in, recurrent])
 
@@ -796,10 +796,10 @@ class Simulation:
     #     output['direction'] = Direction(int(''.join(str(i) for i in y[0:2]), 2))
     #     # [2:3] Move
     #     output['move'] = bool(y[2])
-    #     # [3:8] Comm Out
-    #     output['comm_out'] = [bool(x) for x in y[3:8]]
-    #     # [8:8+self.recurrent_nodes]
-    #     output['recurrent_memory'] = y[3:3+self.recurrent_nodes]
+    #     # [3:4] Comm Out
+    #     output['comm_out'] = [bool(y[3])]
+    #     # [4:4+self.recurrent_nodes]
+    #     output['recurrent_memory'] = y[4:4+self.recurrent_nodes]
     #     return output
 
     # VARIABLE -------------------------------------------------------------

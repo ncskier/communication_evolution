@@ -157,7 +157,7 @@ class Agent:
         self.team_proximity = 0
         self.team = 0
         # communication (sequence of bits)
-        self.comm_bits = 5
+        self.comm_bits = 1
         self.comm_in = [False]*self.comm_bits
         self.comm_out = [False]*self.comm_bits
 
