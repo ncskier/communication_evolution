@@ -854,9 +854,9 @@ class Simulation:
         if next_loc in world.agents:
             adjacent_agent = world.agents[next_loc]
             if agent.team != adjacent_agent.team:
-                fitness += 1
+                fitness += 5
                 if loc == world.next_loc(next_loc, adjacent_agent.direction):
-                    fitness += 19
+                    fitness += 15
         world.agents[loc].fitness = fitness
         return fitness
 
