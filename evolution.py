@@ -14,7 +14,7 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=35, population_size=100, one_population_size=32, num_generations=100, world_size=(20,20), one_world_size=(8,8)):
+    def __init__(self, path='out/test/', draw=False, max_time=35, population_size=100, one_population_size=13, num_generations=100, world_size=(20,20), one_world_size=(5,5)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
@@ -22,6 +22,7 @@ class Simulation:
         self.num_comms = 0
         self.one_population_size = one_population_size
         self.one_world_size = one_world_size
+        self.one_range = 3
         # Create path
         self.path = path
         if not os.path.exists(os.path.dirname(path)):
@@ -91,7 +92,8 @@ class Simulation:
         for generation in range(self.generation, self.num_generations):
             # Grade - [graded] is list of tuples ([score], model) - higher is better
             if one:
-                self.run_world_simulation_one(generation)
+                for _ in range(self.one_range):
+                    self.run_world_simulation_one(generation)
             else:
                 self.run_world_simulation(world, generation)
             print('fitness gen {}:'.format(generation))
@@ -164,6 +166,7 @@ class Simulation:
             teams = self.initialize_teams(self.one_population_size)
             for i in range(self.one_population_size):
                 self.initialize_agent(world, i, teams[i], nn_model=model)
+            print('1: len(world.agents): {}'.format(len(world.agents)))
             # Run simulation
             self.run_world_simulation(world, generation, one_loc=loc)
             # Calculate and save fitnesses in [agent]
@@ -193,18 +196,10 @@ class Simulation:
         draw = self.draw
         self.draw = True
         if one:
-            width = world.width
-            height = world.height
-            world.width = self.one_world_size[0]
-            world.height = self.one_world_size[1]
-            self.view = View(world)
-            world.width = width
-            world.height = height
-        else:
-            self.view = View(world)
-        if one:
+            self.view = View(World(self.one_world_size[0], self.one_world_size[1]))
             self.run_world_simulation_one(self.generation, one_agent=one_agent)
         else:
+            self.view = View(world)
             self.run_world_simulation(world, self.generation)
             self.evaluate_fitnesses(world)
             # Save fitness
@@ -849,7 +844,7 @@ class Simulation:
         """Return fitness of agent at [loc] higher is better than lower."""
         self.fitness_name = 'points for facing an adjacent opposite team agent. most points for a match'
         if one:
-            return world.agents[loc].fitness / self.one_population_size
+            return world.agents[loc].fitness / self.one_population_size / self.one_range
         fitness = 0
         agent = world.agents[loc]
         next_loc = world.next_loc(loc, agent.direction)
