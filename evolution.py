@@ -17,7 +17,7 @@ class Simulation:
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
-        self.recurrent_nodes = 10
+        self.recurrent_nodes = 2
         self.num_comms = 0
         self.one_population_size = one_population_size
         self.one_world_size = one_world_size
