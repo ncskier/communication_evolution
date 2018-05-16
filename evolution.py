@@ -166,7 +166,7 @@ class Simulation:
             teams = self.initialize_teams(self.one_population_size)
             for i in range(self.one_population_size):
                 self.initialize_agent(world, i, teams[i], nn_model=model)
-            print('1: len(world.agents): {}'.format(len(world.agents)))
+            # print('1: len(world.agents): {}'.format(len(world.agents)))
             # Run simulation
             self.run_world_simulation(world, generation, one_loc=loc)
             # Calculate and save fitnesses in [agent]
