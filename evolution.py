@@ -711,8 +711,8 @@ class Simulation:
     #     # Output - Layer
     #     model.add(Dense(output_vars, activation='sigmoid'))
     #     # print('nn_weights: {}'.format(model.get_weights())
-    #     if self.generation == 0:
-    #         print('kernel_init: {}'.format(kernel_init))
+    #     # if self.generation == 0:
+    #     #     print('kernel_init: {}'.format(kernel_init))
     #     return model
 
     # # VARIABLE
@@ -767,8 +767,8 @@ class Simulation:
     #     # Output - Layer
     #     model.add(Dense(output_vars, activation='sigmoid'))
     #     # print('nn_weights: {}'.format(model.get_weights())
-    #     if self.generation == 0:
-    #         print('kernel_init: {}'.format(kernel_init))
+    #     # if self.generation == 0:
+    #     #     print('kernel_init: {}'.format(kernel_init))
     #     return model
 
     # # VARIABLE
