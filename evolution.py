@@ -14,12 +14,14 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=30, population_size=200, num_generations=100, world_size=(20,20)):
+    def __init__(self, path='out/test/', draw=False, max_time=35, population_size=100, one_population_size=13, num_generations=100, world_size=(20,20), one_world_size=(5,5)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
         self.recurrent_nodes = 10
         self.num_comms = 0
+        self.one_population_size = one_population_size
+        self.one_world_size = one_world_size
         # Create path
         self.path = path
         if not os.path.exists(os.path.dirname(path)):
@@ -28,6 +30,7 @@ class Simulation:
         if not os.path.exists(stats_path):
             with open(stats_path, 'w') as f:
                 f.write('population size, {}\n'.format(population_size))
+                f.write('one population size, {}\n'.format(one_population_size))
                 f.write('world simulation time, {}\n'.format(max_time))
                 f.write('world size, {} by {}\n'.format(world_size[0], world_size[1]))
                 f.write('\ngen, mean, max, min, comms, fitness one agent worlds, fitness description, nn description')
@@ -41,11 +44,11 @@ class Simulation:
         if self.draw:
             self.view = View(self.world)
 
-    def initialize_teams(self):
+    def initialize_teams(self, num_agents):
         """Initialize list of teams."""
         teams = []
-        for i in range(self.num_agents):
-            if i < self.num_agents/2:
+        for i in range(num_agents):
+            if i < num_agents/2:
                 teams.append(0)
             else:
                 teams.append(1)
@@ -56,7 +59,7 @@ class Simulation:
         """Add agents to [self.world]."""
         # Precondition: [self.world] and [self.num_agents] must be defined
         world.agents = {}
-        teams = self.initialize_teams()
+        teams = self.initialize_teams(self.num_agents)
         for i in range(self.num_agents):
             nn_weights = None
             if nn_weights_list:
@@ -154,10 +157,10 @@ class Simulation:
             agent = self.world.agents[loc]
             model = agent.model
             # Compose world of agent at loc
-            world = World(self.world.width, self.world.height)
+            world = World(self.one_world_size[0], self.one_world_size[1])
             world.agents = {}
-            teams = self.initialize_teams()
-            for i in range(self.num_agents):
+            teams = self.initialize_teams(self.one_population_size)
+            for i in range(self.one_population_size):
                 self.initialize_agent(world, i, teams[i], nn_model=model)
             # Run simulation
             self.run_world_simulation(world, generation, one_loc=loc)
@@ -187,7 +190,16 @@ class Simulation:
         """Save visualization of generation."""
         draw = self.draw
         self.draw = True
-        self.view = View(world)
+        if one:
+            width = world.width
+            height = world.height
+            world.width = self.one_world_size[0]
+            world.height = self.one_world_size[1]
+            self.view = View(world)
+            world.width = width
+            world.height = height
+        else:
+            self.view = View(world)
         if one:
             self.run_world_simulation_one(self.generation)
         else:
@@ -797,7 +809,7 @@ class Simulation:
     #     """Return fitness of agent at [loc] higher is better than lower."""
     #     self.fitness_name = 'imperfect match fitness - points for facing agent not facing this agent'
     #     if one:
-    #         return world.agents[loc].fitness / len(world.agents)
+    #         return world.agents[loc].fitness / len(self.one_population_size)
     #     fitness = 0
     #     agent = world.agents[loc]
     #     next_loc = world.next_loc(loc, agent.direction)
@@ -817,7 +829,7 @@ class Simulation:
     #     """Return fitness of agent at [loc] higher is better than lower."""
     #     self.fitness_name = 'only perfect match fitness - this agent facing an opposite team agent facing this agent'
     #     if one:
-    #         return world.agents[loc].fitness / len(world.agents)
+    #         return world.agents[loc].fitness / len(self.one_population_size)
     #     fitness = 0
     #     agent = world.agents[loc]
     #     next_loc = world.next_loc(loc, agent.direction)
@@ -835,7 +847,7 @@ class Simulation:
         """Return fitness of agent at [loc] higher is better than lower."""
         self.fitness_name = 'points for facing an adjacent opposite team agent. most points for a match'
         if one:
-            return world.agents[loc].fitness / len(world.agents)
+            return world.agents[loc].fitness / len(self.one_population_size)
         fitness = 0
         agent = world.agents[loc]
         next_loc = world.next_loc(loc, agent.direction)
@@ -910,7 +922,7 @@ class Simulation:
             self.generation = generation
         # Iterate over agents
         self.world.agents.clear()
-        teams = self.initialize_teams()
+        teams = self.initialize_teams(self.num_agents)
         model_path = '{}model.json'.format(generation_path)
         for name in os.listdir(generation_path):
             if not ('agent' in name and 'hdf5' in name):
@@ -944,7 +956,7 @@ def visualize_generation():
     if (len(sys.argv) > 4):
         one = (sys.argv[4] == 'True')
     else:
-        one = False
+        one = True
     path = 'out/' + project_name + '/'
     simulation = Simulation(path=path)
     simulation.load_generation(generation=generation)
@@ -966,7 +978,7 @@ def continue_evolution():
     if (len(sys.argv) > 4):
         one = (sys.argv[4] == 'True')
     else:
-        one = False
+        one = True
     # argv[5] = draw
     if (len(sys.argv) > 5):
         draw = (sys.argv[5] == 'True')
@@ -990,7 +1002,7 @@ def run_evolution():
     if (len(sys.argv) > 3):
         one = (sys.argv[3] == 'True')
     else:
-        one = False
+        one = True
     # argv[4] = draw
     if (len(sys.argv) > 4):
         draw = (sys.argv[4] == 'True')
