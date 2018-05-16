@@ -14,7 +14,7 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=35, population_size=100, one_population_size=13, num_generations=100, world_size=(20,20), one_world_size=(5,5)):
+    def __init__(self, path='out/test/', draw=False, max_time=35, population_size=100, one_population_size=32, num_generations=100, world_size=(20,20), one_world_size=(8,8)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
