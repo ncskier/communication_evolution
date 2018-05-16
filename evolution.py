@@ -94,7 +94,7 @@ class Simulation:
             print('fitness gen {}:'.format(generation))
             graded = self.evaluate_fitnesses(world, one)
             # print('{}'.format(graded))
-            print('\t{}'.format(self.fitnesses))
+            # print('\t{}'.format(self.fitnesses))
             retain_length = int(len(graded)*retain)
             parents = graded[:retain_length]
             # Save generation with fitness
@@ -643,8 +643,8 @@ class Simulation:
         # Output - Layer
         model.add(Dense(output_vars, activation='sigmoid'))
         # print('nn_weights: {}'.format(model.get_weights())
-        if self.generation == 0:
-            print('kernel_init: {}'.format(kernel_init))
+        # if self.generation == 0:
+        #     print('kernel_init: {}'.format(kernel_init))
         return model
 
     # VARIABLE
