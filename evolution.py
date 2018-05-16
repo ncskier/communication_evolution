@@ -151,9 +151,11 @@ class Simulation:
             self.num_comms += len(world.comms)
             world.comms = []
 
-    def run_world_simulation_one(self, generation):
+    def run_world_simulation_one(self, generation, one_agent=None):
         """Run agents through world simulations of only themselves."""
         for loc in self.world.agents:
+            if one_agent and self.world.agents[loc].private_id != one_agent:
+                continue
             agent = self.world.agents[loc]
             model = agent.model
             # Compose world of agent at loc
@@ -186,7 +188,7 @@ class Simulation:
         graded = [x[2] for x in graded]
         return graded
 
-    def visualize(self, world, one=False):
+    def visualize(self, world, one=False, one_agent=None):
         """Save visualization of generation."""
         draw = self.draw
         self.draw = True
@@ -201,7 +203,7 @@ class Simulation:
         else:
             self.view = View(world)
         if one:
-            self.run_world_simulation_one(self.generation)
+            self.run_world_simulation_one(self.generation, one_agent=one_agent)
         else:
             self.run_world_simulation(world, self.generation)
             self.evaluate_fitnesses(world)
@@ -914,7 +916,7 @@ class Simulation:
         """Load generation data from [self.path]/gen[generation]/"""
         # Set path - if no generation specified, load the last one
         if (generation == -1):
-            gen_dir = sorted(os.listdir(self.path))[-1]
+            gen_dir = sorted(os.listdir(self.path))[-2]
             generation_path = '{}{}/'.format(self.path, gen_dir)
             self.generation = int(gen_dir[3:])
         else:
@@ -957,10 +959,15 @@ def visualize_generation():
         one = (sys.argv[4] == 'True')
     else:
         one = True
+    # argv[5] = one_agent
+    if (len(sys.argv) > 5):
+        one_agent = int(sys.argv[5])
+    else:
+        one_agent = None
     path = 'out/' + project_name + '/'
     simulation = Simulation(path=path)
     simulation.load_generation(generation=generation)
-    simulation.visualize(simulation.world, one=one)
+    simulation.visualize(simulation.world, one=one, one_agent=one_agent)
 
 def continue_evolution():
     """Continue runing an evolution from specified generation."""
@@ -1017,7 +1024,7 @@ def main():
     # argv[1] = command (run | cont | vis)
     # python3 evolution.py run [project_name] [one] [draw]
     # python3 evolution.py cont [project_name] [generation] [one] [draw]
-    # python3 evolution.py vis [project_name] [generation] [one]
+    # python3 evolution.py vis [project_name] [generation] [one] [one_agent]
     if (len(sys.argv) > 1):
         command = sys.argv[1]
     else:
