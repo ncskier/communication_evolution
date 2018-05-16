@@ -847,7 +847,7 @@ class Simulation:
         """Return fitness of agent at [loc] higher is better than lower."""
         self.fitness_name = 'points for facing an adjacent opposite team agent. most points for a match'
         if one:
-            return world.agents[loc].fitness / len(self.one_population_size)
+            return world.agents[loc].fitness / self.one_population_size
         fitness = 0
         agent = world.agents[loc]
         next_loc = world.next_loc(loc, agent.direction)
