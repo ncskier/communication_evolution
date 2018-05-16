@@ -14,7 +14,7 @@ import os
 class Simulation:
     """Evolution simulation."""
 
-    def __init__(self, path='out/test/', draw=False, max_time=35, population_size=100, one_population_size=32, num_generations=100, world_size=(20,20), one_world_size=(8,8)):
+    def __init__(self, path='out/test/', draw=False, max_time=50, population_size=70, one_population_size=32, num_generations=100, world_size=(20,20), one_world_size=(8,8)):
         self.max_time = max_time
         self.num_generations = num_generations
         self.generation = 0
@@ -131,12 +131,14 @@ class Simulation:
             nn_weights_list = [self.unflatten_model_weights(x) for x in parents]
             self.initialize_agents(world, nn_weights_list=nn_weights_list)
 
-    def run_world_simulation(self, world, generation, one_loc=None):
+    def run_world_simulation(self, world, generation, one_id=None):
         """Run agents through world simulation."""
         draw_path = '{}gen{}/world'.format(self.path, generation)
-        if one_loc:
-            one_agent = self.world.agents[one_loc]
-            draw_path = '{}gen{}/agent-i{}/world'.format(self.path, generation, one_agent.private_id)
+        if one_id:
+            if (world.fitness_iter):
+                draw_path = '{}gen{}/iter{}/agent-i{}/world'.format(self.path, generation, world.fitness_iter, one_id)
+            else:
+                draw_path = '{}gen{}/agent-i{}/world'.format(self.path, generation, one_id)
         draw_ext = '.png'
         if self.draw:
             self.view.draw(world)
@@ -158,18 +160,21 @@ class Simulation:
                 continue
             agent = self.world.agents[loc]
             model = agent.model
-            # Compose world of agent at loc
-            world = World(self.one_world_size[0], self.one_world_size[1])
-            world.agents = {}
-            teams = self.initialize_teams(self.one_population_size)
-            for i in range(self.one_population_size):
-                self.initialize_agent(world, i, teams[i], nn_model=model)
-            # Run simulation
-            self.run_world_simulation(world, generation, one_loc=loc)
-            # Calculate and save fitnesses in [agent]
-            agent.fitness = 0.0
-            for loc in world.agents:
-                agent.fitness += self.fitness(loc, world)
+            for fitness_iter in range(5):
+                # Compose world of agent at loc
+                world = World(self.one_world_size[0], self.one_world_size[1])
+                world.agents = {}
+                world.fitness_iter = fitness_iter
+                teams = self.initialize_teams(self.one_population_size)
+                for i in range(self.one_population_size):
+                    self.initialize_agent(world, i, teams[i], nn_model=model)
+                # Run simulation
+                self.run_world_simulation(world, generation, one_id=agent.private_id)
+                # Calculate and save fitnesses in [agent]
+                agent.fitness = 0.0
+                for loc in world.agents:
+                    agent.fitness += self.fitness(loc, world)
+            agent.fitness /= 5.0
 
     def evaluate_fitnesses(self, world, one=False):
         """Evaluate fitnesses to [self.fitnesses]."""

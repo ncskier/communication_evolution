@@ -18,6 +18,7 @@ class World:
         self.height = height
         self.agents = {}
         self.comms = []
+        self.fitness_iter = None
 
     def update(self, move=True, comm=True):
         """Update world one step."""
