@@ -21,12 +21,12 @@ class World:
 
     def update(self, move=True, comm=True):
         """Update world one step."""
-        # (1) Communication between agents
-        if (comm):
-            self.update_comm()
-        # (2) Move agents based on their state
+        # (1) Move agents based on their state
         if (move):
             self.update_move()
+        # (2) Communication between agents
+        if (comm):
+            self.update_comm()
         # (3) Update agent sensors
         self.update_proximity()
 
